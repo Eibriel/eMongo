@@ -8,13 +8,50 @@ class Connection():
 class Document():
     _data = {}
 
+    def __init__(self):
+        self._data = {}
+
     def __setitem__(self, key, value):
-        print (key)
-        print (value)
-        if self.structure.get(key) and self.validators.get(key)(value):
-            self._data[key] = value
-        else:
+        # print ("{0}: {1}({2})".format(key, value, type(value)))
+        if not self.structure.get(key):
+            raise ValueError("Out of structure")
+        elif not self.structure.get(key) == type(value):
+            raise ValueError("Incorrect type")
+        elif not self.validators.get(key)(value):
             raise ValueError("Validation Error")
+        else:
+            self._data[key] = value
 
     def safe(self):
-        return self._data
+        return self._data.copy()
+
+    # Validators
+    def max_length(length):
+        def validate(value):
+            return len(value) <= length
+        return validate
+
+    def min_max_val(min_, max_):
+        def validate(value):
+            return value >= min_ and value <= max_
+        return validate
+
+    def min_val(min_):
+        def validate(value):
+            return value >= min_
+        return validate
+
+    def any_val():
+        def validate(value):
+            return True
+        return validate
+
+    def in_list(list_):
+        def validate(value):
+            return value in list_
+        return validate
+
+    def if_type_in(list_):
+        def validate(value):
+            return type(value) in list_
+        return validate
