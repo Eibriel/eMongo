@@ -16,7 +16,9 @@ class Document():
         if not self.structure.get(key):
             raise ValueError("Out of structure")
         elif not self.structure.get(key) == type(value):
-            raise ValueError("Incorrect type")
+            raise ValueError(
+                "Incorrect type, expected {0}, given {1}".format(
+                    self.structure.get(key), type(value)))
         elif not self.validators.get(key)(value):
             raise ValueError("Validation Error")
         else:
