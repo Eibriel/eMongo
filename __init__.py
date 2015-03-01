@@ -13,19 +13,26 @@ class Document():
 
     def __setitem__(self, key, value):
         # print ("{0}: {1}({2})".format(key, value, type(value)))
-        if not self.structure.get(key):
+        if not key in self.structure:
             raise ValueError("Out of structure")
-        elif not self.structure.get(key) == type(value):
+        elif self.structure[key] != None and\
+                not self.structure[key] == type(value):
             raise ValueError(
                 "Incorrect type, expected {0}, given {1}".format(
-                    self.structure.get(key), type(value)))
-        elif not self.validators.get(key)(value):
+                    self.structure[key], type(value)))
+        elif not self.validators[key](value):
             raise ValueError("Validation Error")
         else:
             self._data[key] = value
 
     def safe(self):
-        return self._data.copy()
+        safe_data = {}
+        for dkey in self._data:
+            if self.structure[dkey] != None:
+                safe_data[dkey] = self._data[dkey]
+            else:
+                safe_data[dkey] = self._data[dkey].safe()
+        return safe_data
 
     # Validators
     def max_length(length):
